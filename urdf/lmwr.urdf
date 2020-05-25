@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<robot name="lmwr">
+
+  <!-- MATERIALS -->
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <!-- BODY -->
+  <link name="main_body">
+    <visual>
+      <geometry>
+        <box size="0.7 0.4 0.25"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.7 0.4 0.25"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="13"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- FRONT WHEELS -->
+  <!-- RIGHT FRONT WHEEL -->
+  <link name="right_front_support">
+    <visual>
+      <geometry>
+        <box size="0.05 0.01 0.08"/>
+      </geometry>
+      <origin xyz="0 0 -0.04"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.01 0.08"/>
+      </geometry>
+      <origin xyz="0 0 -0.04"/>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <joint name="right_front_base_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 0 1"/>
+    <parent link="main_body"/>
+    <child link="right_front_support"/>
+    <origin xyz="0.3 0.15 -0.125"/>
+  </joint>
+
+  <link name="right_front_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0.015 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.05"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.57075 0 0" xyz="0 0.015 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="right_front_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="right_front_support"/>
+    <child link="right_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0 0.01 -0.06"/>
+  </joint>
+
+  <!-- LEFT FRONT WHEEL -->
+  <link name="left_front_support">
+    <visual>
+      <geometry>
+        <box size="0.05 0.01 0.08"/>
+      </geometry>
+      <origin xyz="0 0 -0.04"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.01 0.08"/>
+      </geometry>
+      <origin xyz="0 0 -0.04"/>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <joint name="left_front_base_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 0 1"/>
+    <parent link="main_body"/>
+    <child link="left_front_support"/>
+    <origin xyz="0.3 -0.15 -0.125"/>
+  </joint>
+
+  <link name="left_front_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 -0.015 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.05"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.57075 0 0" xyz="0 -0.025 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="left_front_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="left_front_support"/>
+    <child link="left_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0 -0.01 -0.06"/>
+  </joint>
+
+  <!-- RIGHT TRACTION WHEEL -->
+  <link name="right_traction_wheel">
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.11"/>
+      </geometry>
+      <origin rpy="1.57075 0 0" xyz="0 0.025 0"/>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.05" radius="0.11"/>
+      </geometry>
+      <origin rpy="1.57075 0 0" xyz="0 0.025 0"/>
+    </collision>
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <joint name="right_traction_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="main_body"/>
+    <child link="right_traction_wheel"/>
+    <origin xyz="-0.2 0.21 -0.125"/>
+  </joint>
+
+  <!-- LEFT TRACTION WHEEL -->
+  <link name="left_traction_wheel">
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.11"/>
+      </geometry>
+      <origin rpy="1.57075 0 0" xyz="0 -0.025 0"/>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.05" radius="0.11"/>
+      </geometry>
+      <origin rpy="1.57075 0 0" xyz="0 -0.025 0"/>
+    </collision>
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <joint name="left_traction_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="main_body"/>
+    <child link="left_traction_wheel"/>
+    <origin xyz="-0.2 -0.21 -0.125"/>
+  </joint>
+
+  <!-- Gazebo plugin for ROS Control -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/</robotNamespace>
+    </plugin>
+  </gazebo> 
+
+</robot>

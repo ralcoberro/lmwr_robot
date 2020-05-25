@@ -1,0 +1,20 @@
+<package>
+  <name>lmwr_ros_model</name>
+  <version>0.1.0</version>
+
+  <description>Autonomous Lawnmower</description>
+  <author email="ralcoberro@gmail.com">Rodrigo Alcoberro</author>
+
+  <maintainer email="ralcoberro@gmail.com">Rodrigo Alcoberro</maintainer>
+
+  <license>BSD</license>
+  <url>http://www.lawnmower.com.ar</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>xacro</run_depend>
+
+</package>
