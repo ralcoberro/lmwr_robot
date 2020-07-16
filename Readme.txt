@@ -16,3 +16,18 @@ roslaunch lmwr_ros_model joints.launch model:='$(find lmwr_ros_model)/urdf/lmwr-
 roslaunch lmwr_ros_model diffdrive.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diffdrive.urdf.xacro'
 (Levanta el modelo en RVIZ y Gazebo y el control diferencial)
 
+roslaunch lmwr_ros_model diffdrive.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam.urdf.xacro'
+(Levanta el modelo con Ultrasonido y camara en RVIZ y Gazebo y el control diferencial)
+
+roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam.urdf.xacro'
+(Levanta el modelo con Ultrasonido y camara en RVIZ y Gazebo y el nodo walker)
+
+
+Para hacer mover el robot hacia adelante a 0.5 m/s por linea de comando:
+rostopic pub /lmwr_diff_ive_controller/cmd_vel geometry_msgs/Twist -r 3 -- '[0.5,0.0,0.0]' '[0.0, 0.0, 0.0]'
+
+Hacia atras:
+rostopic pub /lmwr_diff_drive_controller/cmd_vel geometry_msgs/Twist -r 3 -- '[-0.5,0.0,0.0]' '[0.0, 0.0, 0.0]'
+
+Rotación a 0.3 rad/s
+rostopic pub /lmwr_diff_drive_controller/cmd_vel geometry_msgs/Twist -r 3 -- '[0.0,0.0,0.0]' '[0.0, 0.0, 0.3]'
