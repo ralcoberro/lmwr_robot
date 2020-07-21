@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot name="materials" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="inertial_cuboid" params="mass len width height">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="${mass*(height*height+len*len)/12}" ixy="0.0" ixz="0.0" iyy="${mass*(width*width+len*len)/12}" iyz="0.0" izz="${mass*(width*width+height*height)/12}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="inertial_sphere" params="mass radius">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="${2*mass*radius*radius/5}" ixy="0.0" ixz="0.0" iyy="${2*mass*radius*radius/5}" iyz="0.0" izz="${2*mass*radius*radius/5}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Inercial tensor of a cylinder with the radius in the xy plane) -->
+  <xacro:macro name="inertial_cylinder" params="mass radius height">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="${mass*(3*radius*radius+height*height)/12}" ixy="0.0" ixz="0.0" iyy="${mass*(3*radius*radius+height*height)/12}" iyz="0.0" izz="${mass*radius*radius/2}" />
+    </inertial>
+  </xacro:macro>
+
+  <!-- Inercial tensor of a cylinder rotating about y axis (i.e. wheels) -->
+  <xacro:macro name="inertial_cylinder_y_axis" params="mass radius height">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="${mass*(3*radius*radius+height*height)/12}" ixy="0.0" ixz="0.0" iyy="${mass*radius*radius/2}" iyz="0.0" izz="${mass*(3*radius*radius+height*height)/12}" />
+    </inertial>
+  </xacro:macro>
+
+</robot>

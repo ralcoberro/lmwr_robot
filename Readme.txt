@@ -1,6 +1,6 @@
 Ejecutar
 catkin_make
-source devel/debug.sh
+source devel/setup.bash
 
 Parado en cualquier directorio lmwr_ros_model ejecutar:
 

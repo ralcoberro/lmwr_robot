@@ -45,7 +45,7 @@ void commandCallback(const sensor_msgs::Range::ConstPtr& msg) {
 	
 	if (fsm == FSM_MOVE_FORWARD) {
 		if(msg->range < MIN_PROXIMITY_RANGE_M) {
-			ROS_INFO_STREAM("Range: " << msg->range);
+			ROS_INFO_STREAM("Range below thres: " << msg->range);
 			rotateStartTime = ros::Time::now();
 			float duration_s = 1 + std::rand() % ROTATE_PI_DURATION_S;
 			rotateDuration = ros::Duration(duration_s);
@@ -63,14 +63,18 @@ void commandCallback(const sensor_msgs::Range::ConstPtr& msg) {
 	}
 	else {
 		ros::Time isnow = ros::Time::now();		
-		//ROS_INFO_STREAM("Now: " << isnow);
-		//ROS_INFO_STREAM("Start Rotation: " << rotateStartTime);
-		//ROS_INFO_STREAM("Duration: " << rotateDuration);
 		ros::Time total_rot = rotateStartTime + rotateDuration;
-		//ROS_INFO_STREAM("Total: " << total_rot);
 		if(isnow > total_rot) {
-			ROS_INFO_STREAM("Moving Forward");
-			fsm = FSM_MOVE_FORWARD;
+			if(msg->range < MIN_PROXIMITY_RANGE_M) {
+				float duration_s = 1 + std::rand() % ROTATE_PI_DURATION_S;
+				rotateStartTime = isnow;
+				rotateDuration = ros::Duration(duration_s);
+				ROS_INFO_STREAM("Range below thres: " << msg->range << ". Continue in rotation for: " << rotateDuration << " secs");
+			}
+			else {
+				ROS_INFO_STREAM("Free path. Moving Forward");
+				fsm = FSM_MOVE_FORWARD;
+			}
 		}
 	}
  };
@@ -117,10 +121,10 @@ ros::Duration rotateDuration; 		// Duration of the rotation
 
 };
 
-const float RandomWalk::MIN_PROXIMITY_RANGE_M = 1.0;
+const float RandomWalk::MIN_PROXIMITY_RANGE_M = 0.5;
 const double RandomWalk::FORWARD_SPEED_MPS = 2.0;
-const int RandomWalk::ROTATE_PI_DURATION_S = 4;
-const double RandomWalk::ROTATE_SPEED_RADPS = M_PI/RandomWalk::ROTATE_PI_DURATION_S;
+const int RandomWalk::ROTATE_PI_DURATION_S = 6;
+const double RandomWalk::ROTATE_SPEED_RADPS = M_PI/(2*RandomWalk::ROTATE_PI_DURATION_S);
 
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "random_walk_basic"); 	// Initiate new ROS node named "random_walk"
