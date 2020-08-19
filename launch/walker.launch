@@ -1,6 +1,8 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="model" default="$(find lmwr_ros_model)/urdf/lmwr-diffdrive.urdf.xacro"/>
   <arg name="rvizconfig" default="$(find lmwr_ros_model)/rviz/urdf.rviz" />
+  <arg name="world" default="$(find lmwr_ros_model)/worlds/lmwr.world"/>
 
   <env
     name="ROSCONSOLE_CONFIG_FILE"
@@ -9,6 +11,7 @@
 
   <include file="$(find lmwr_ros_model)/launch/gazebo.launch">
     <arg name="model" value="$(arg model)" />
+    <arg name="world" value="$(arg world)" />
   </include>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />

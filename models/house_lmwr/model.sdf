@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="house_lmwr">
+    <static>true</static>
+    <pose>-20 -10 0 0 0 0</pose>
+    <link name="house">
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://house_lmwr/meshes/World_lmwr.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://house_lmwr/meshes/World_lmwr.dae</uri>
+          </mesh>
+        </geometry>
+        <cast_shadows>false</cast_shadows>
+      </visual>
+    </link>
+  </model>
+</sdf>

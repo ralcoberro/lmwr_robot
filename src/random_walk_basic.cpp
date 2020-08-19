@@ -29,6 +29,7 @@ RandomWalk(ros::NodeHandle& nh) : fsm(FSM_MOVE_FORWARD),
 	// this->commandCallback() whenever a new message is published on that topic
 	ultraSub_1 = nh.subscribe("sensor/ultra_1_ultrasonic_front", 1, &RandomWalk::commandCallback, this);
 	ultraSub_2 = nh.subscribe("sensor/ultra_2_ultrasonic_front", 1, &RandomWalk::commandCallback, this);
+	ultraSub_3 = nh.subscribe("sensor/ultra_center_ultrasonic_front", 1, &RandomWalk::commandCallback, this);
 };
 
 // Send a velocity command
@@ -45,7 +46,7 @@ void commandCallback(const sensor_msgs::Range::ConstPtr& msg) {
 	
 	if (fsm == FSM_MOVE_FORWARD) {
 		if(msg->range < MIN_PROXIMITY_RANGE_M) {
-			ROS_INFO_STREAM("Range below thres: " << msg->range);
+			ROS_INFO_STREAM("Range below thres: " << msg->range << " frame Id: " << frame_id);
 			rotateStartTime = ros::Time::now();
 			float duration_s = 1 + std::rand() % ROTATE_PI_DURATION_S;
 			rotateDuration = ros::Duration(duration_s);
@@ -69,7 +70,7 @@ void commandCallback(const sensor_msgs::Range::ConstPtr& msg) {
 				float duration_s = 1 + std::rand() % ROTATE_PI_DURATION_S;
 				rotateStartTime = isnow;
 				rotateDuration = ros::Duration(duration_s);
-				ROS_INFO_STREAM("Range below thres: " << msg->range << ". Continue in rotation for: " << rotateDuration << " secs");
+				ROS_INFO_STREAM("Range below thres: " << msg->range << " frame Id: " << frame_id << ". Continue in rotation for: " << rotateDuration << " secs");
 			}
 			else {
 				ROS_INFO_STREAM("Free path. Moving Forward");
@@ -115,6 +116,7 @@ protected:
 ros::Publisher commandPub; 		// Publisher to the simulated robot's velocity command topic
 ros::Subscriber ultraSub_1; 		// Subscriber to the simulated robot's Ultrasonic topic
 ros::Subscriber ultraSub_2; 		// Subscriber to the simulated robot's Ultrasonic topic
+ros::Subscriber ultraSub_3; 		// Subscriber to the simulated robot's Ultrasonic topic
 enum FSM fsm; 				// Finite state machine for the random walk algorithm
 ros::Time rotateStartTime; 		// Start time of the rotation
 ros::Duration rotateDuration; 		// Duration of the rotation
