@@ -43,3 +43,5 @@ roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-
 
 roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-v3.urdf.xacro' world:='$(find lmwr_ros_model)/worlds/garden_2_lmwr.world'
 
+roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-v3.urdf.xacro' world:='$(find lmwr_ros_model)/worlds/garden_3_lmwr.world'
+
