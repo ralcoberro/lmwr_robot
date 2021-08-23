@@ -213,3 +213,6 @@ install(DIRECTORY urdf
 add_executable(random_walk_basic src/random_walk_basic.cpp)
 target_link_libraries(random_walk_basic ${catkin_LIBRARIES})
 
+add_executable(wall_follower src/wall_follower.cpp)
+target_link_libraries(wall_follower ${catkin_LIBRARIES})
+

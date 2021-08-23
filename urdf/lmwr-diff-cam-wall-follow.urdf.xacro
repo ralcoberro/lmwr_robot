@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<robot name="lmwr_diff_ultra_xacro" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="body_lenght" value="0.35" />
+  <xacro:property name="body_width" value="0.3" />
+  <xacro:property name="body_height" value="0.25" />
+  <xacro:property name="traction_wheel_radius" value="0.1" />
+  <xacro:property name="traction_wheel_width" value="0.03" />
+  <xacro:property name="aux_wheel_radius" value="0.04" />
+  <xacro:property name="aux_wheel_width" value="0.03" />
+  <xacro:property name="support_lenght" value="0.6" />
+  <xacro:property name="camera_link" value="0.05" />
+
+  <xacro:include filename="materials.xacro" />
+  <xacro:include filename="inertials.xacro" />
+
+  <link name="main_body">
+    <visual>
+      <geometry>
+	<mesh filename="package://lmwr_ros_model/meshes/body.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="blue"/>
+      <origin xyz="0.17 -0.15 -0.15" rpy="1.57 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${body_lenght} ${body_width} ${body_height}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Dummy link just for inertial purposes -->
+  <link name="dummy_link">
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+    </collision>
+    <xacro:inertial_cuboid mass="7" len="${body_lenght}" width="${body_width}" height="${body_height}" />
+   </link>
+
+  <joint name="dummy_base_joint" type="fixed">
+    <axis rpy="0 0 0" xyz="0 0 1"/>
+    <parent link="main_body"/>
+    <child link="dummy_link"/>
+    <origin xyz="0 0 0" />
+  </joint>
+
+  <xacro:macro name="front_sensor_sup_link" params="name y_pos z_pos angle_pan">
+    <link name="${name}_front_sensor">
+      <collision>
+        <geometry>
+          <box size="0.05 0.05 0.05"/>
+        </geometry>
+        <origin xyz="-0.025 0 0"/>
+      </collision>
+    </link>
+
+    <joint name="${name}_front_sensor_joint" type="fixed">
+      <axis rpy="0 0 0" xyz="0 0 1"/>
+      <parent link="main_body"/>
+      <child link="${name}_front_sensor"/>
+      <origin xyz="${body_lenght/2} ${y_pos} ${z_pos}" rpy="0 0 ${angle_pan}" />
+    </joint>
+
+    <gazebo reference="${name}_front_sensor">        
+     <sensor type="ray" name="TeraRanger">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>50</update_rate>
+      <ray>
+         <scan>
+            <horizontal>
+               <samples>10</samples>
+               <resolution>1</resolution> 
+               <min_angle>-0.14835</min_angle>
+               <max_angle>0.14835</max_angle>
+            </horizontal>
+            <vertical>
+               <samples>10</samples>
+               <resolution>1</resolution> 
+               <min_angle>-0.14835</min_angle>
+               <max_angle>0.14835</max_angle> 
+            </vertical>
+         </scan>
+         <range>
+            <min>0.01</min>
+            <max>2</max>
+            <resolution>0.02</resolution>
+         </range>
+      </ray>
+      <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+        <gaussianNoise>0.005</gaussianNoise>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50</updateRate>
+        <topicName>sensor/${name}_ultrasonic_front</topicName>
+        <frameName>${name}_front_sensor</frameName>
+        <radiation>ULTRASOUND</radiation>
+        <fov>0.2967</fov>
+      </plugin>
+     </sensor>  
+   </gazebo>
+
+  </xacro:macro>
+
+  <!-- Camera -->
+  <link name="camera_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${camera_link} ${camera_link} ${camera_link}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="${body_lenght/2} 0 0.1" rpy="0 0 0"/>
+    <parent link="main_body"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <!-- camera -->
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="camera1">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>sensor/camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- IMU -->
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>main_body</bodyName>
+      <topicName>imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <updateRate>20.0</updateRate>
+    </plugin>
+  </gazebo>
+
+  <!-- GPS -->
+  <gazebo>
+    <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
+      <alwayson>true</alwayson>
+      <updaterate>1.0</updaterate>
+      <bodyname>main_body</bodyname>
+      <topicname>fix</topicname>
+      <velocitytopicname>/fix_velocity</velocitytopicname>
+      <drift>5.0 5.0 5.0</drift>
+      <gaussiannoise>0.1 0.1 0.1</gaussiannoise>
+      <velocitydrift>0 0 0</velocitydrift>
+      <velocitygaussiannoise>0.1 0.1 0.1</velocitygaussiannoise>
+    </plugin>
+  </gazebo>
+
+  <xacro:macro name="aux_wheel" params="side reflect">
+
+    <link name="${side}_aux_wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${aux_wheel_radius}" length="${aux_wheel_width}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      <collision>	
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${aux_wheel_radius}" length="${aux_wheel_width}"/>
+        </geometry>
+      </collision>
+      <xacro:inertial_cylinder_y_axis mass="0.2" radius="${aux_wheel_radius}" height="${aux_wheel_width}" />
+    </link>
+    <joint name="${side}_aux_wheel_joint" type="continuous">
+      <axis xyz="0 1 0" rpy="0 0 0" />
+      <parent link="${side}_wheel_support"/>
+      <child link="${side}_aux_wheel"/>
+      <origin xyz="-0.05 ${reflect*0.01} -0.05" rpy="0 0 0"/>
+    </joint>
+
+    <!-- This block provides the simulator (Gazebo) with information on a few additional
+    physical properties. See http://gazebosim.org/tutorials/?tut=ros_urdf for more-->
+    <gazebo reference="${side}_aux_wheel">
+      <mu1 value="50.0"/>
+      <mu2 value="100.0"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+  </xacro:macro>
+
+  <xacro:macro name="support" params="side displacement reflect">
+    <link name="${side}_wheel_support">
+      <visual>
+        <geometry>
+          <box size="0.05 0.01 0.06"/>
+        </geometry>
+        <origin xyz="-0.02 ${displacement} -0.03"/>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.05 0.01 0.08"/>
+        </geometry>
+        <origin xyz="-0.02 ${displacement} -0.03"/>
+      </collision>
+      <xacro:inertial_cuboid mass="0.2" len="0.05" width="0.01" height="0.08" />
+    </link>
+
+    <joint name="${side}_base_joint" type="continuous">
+      <axis rpy="0 0 0" xyz="0 0 1"/>
+      <parent link="main_body"/>
+      <child link="${side}_wheel_support"/>
+      <origin xyz="-0.1 ${reflect*0.1} -0.125" />
+      <dynamics damping="1" friction="0.1"/>
+    </joint>
+    <xacro:aux_wheel side="${side}"  reflect="${reflect}"/>
+
+  </xacro:macro>
+
+  <xacro:macro name="traction_wheel" params="side reflect">
+
+    <link name="${side}_traction_wheel">
+      <visual>
+        <origin xyz="0 ${reflect*traction_wheel_width/2} 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${traction_wheel_radius}" length="${traction_wheel_width}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 ${reflect*traction_wheel_width/2} 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${traction_wheel_radius}" length="${traction_wheel_width}"/>
+        </geometry>
+      </collision>
+      <xacro:inertial_cylinder_y_axis mass="1" radius="${traction_wheel_radius}" height="${traction_wheel_width}" />
+    </link>
+    <joint name="${side}_traction_wheel_joint" type="continuous">
+      <axis xyz="0 1 0" rpy="0 0 0" />
+      <parent link="main_body"/>
+      <child link="${side}_traction_wheel"/>
+      <origin xyz="${body_lenght/3} ${reflect*(body_width/2+0.01)} ${-body_height/2}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- This block provides the simulator (Gazebo) with information on a few additional
+    physical properties. See http://gazebosim.org/tutorials/?tut=ros_urdf for more-->
+    <gazebo reference="${side}_traction_wheel">
+      <mu1 value="300.0"/>
+      <mu2 value="100.0"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <!-- This block connects the wheel joint to an actuator (motor), which informs both
+    simulation and visualization of the robot -->
+    <transmission name="${side}_traction_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="${side}_traction_wheel_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="${side}_traction_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+
+  </xacro:macro>
+
+  <xacro:traction_wheel side="left" reflect="-1"/>
+  <xacro:traction_wheel side="right" reflect="1"/>
+
+  <xacro:support side="left" displacement="${traction_wheel_width/3}" reflect="-1" />
+  <xacro:support side="right" displacement="${-traction_wheel_width/3}" reflect="1" />
+
+  <xacro:front_sensor_sup_link name="ultra_1" y_pos="-0.15" z_pos="0.07" angle_pan="-1.4" />
+  <xacro:front_sensor_sup_link name="ultra_2" y_pos="0.15" z_pos="0.07" angle_pan="1.4" />
+  <xacro:front_sensor_sup_link name="ultra_center" y_pos="0" z_pos="0.07" angle_pan="0" />
+
+  <!-- Gazebo plugin for ROS Control -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/</robotNamespace>
+    </plugin>
+  </gazebo>
+
+</robot>

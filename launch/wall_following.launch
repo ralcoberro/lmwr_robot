@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(find lmwr_ros_model)/urdf/lmwr-diffdrive.urdf.xacro"/>
+  <arg name="rvizconfig" default="$(find lmwr_ros_model)/rviz/urdf.rviz" />
+  <arg name="world" default="$(find lmwr_ros_model)/worlds/lmwr.world"/>
+
+  <env
+    name="ROSCONSOLE_CONFIG_FILE"
+    value="$(find lmwr_ros_model)/config/logger_level.conf"
+  />
+
+  <include file="$(find lmwr_ros_model)/launch/gazebo.launch">
+    <arg name="model" value="$(arg model)" />
+    <arg name="world" value="$(arg world)" />
+  </include>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
+
+  <rosparam command="load"
+            file="$(find lmwr_ros_model)/config/joints.yaml"
+            ns="lmwr_joint_state_controller" />
+  <rosparam command="load"
+            file="$(find lmwr_ros_model)/config/diffdrive.yaml"
+            ns="lmwr_diff_drive_controller" />
+
+  <node name="lmwr_controller_spawner" pkg="controller_manager" type="spawner"
+    args="lmwr_joint_state_controller
+          lmwr_diff_drive_controller
+          --shutdown-timeout 3"/>
+
+  <node name="wall_follower" pkg="lmwr_ros_model" type="wall_follower" output="screen" />
+</launch>

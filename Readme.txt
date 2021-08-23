@@ -45,3 +45,14 @@ roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-
 
 roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-v3.urdf.xacro' world:='$(find lmwr_ros_model)/worlds/garden_3_lmwr.world'
 
+Para lanzar el Wall Following
+roslaunch lmwr_ros_model wall_following.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-wall-follow.urdf.xacro' world:='worlds/willowgarage.world'
+
+roslaunch lmwr_ros_model wall_following.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-wall-follow.urdf.xacro' world:='worlds/maze.world'
+
+roslaunch lmwr_ros_model wall_following.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-wall-follow.urdf.xacro' world:='$(find lmwr_ros_model)/worlds/maze.world'
+
+roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-wall-follow.urdf.xacro' world:='$(find lmwr_ros_model)/worlds/garden_3_lmwr.world'
+
+roslaunch lmwr_ros_model walker.launch model:='$(find lmwr_ros_model)/urdf/lmwr-diff-cam-wall-follow.urdf.xacro' world:='$(find lmwr_ros_model)/worlds/garden_3_lmwr.world'
+
